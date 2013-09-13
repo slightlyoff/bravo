@@ -11,6 +11,7 @@
 #include "bravo/plugin/ppb.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_errors.h"
+#include "v8/include/v8.h"
 
 namespace bravo {
 
@@ -105,7 +106,7 @@ void CtorCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 }
 
 v8::Handle<v8::FunctionTemplate> CreateGraphics3DBindings() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
 
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   templ->Inherit(CreateWebGLBindings());

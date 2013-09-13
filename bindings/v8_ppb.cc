@@ -4,10 +4,11 @@
 
 #include "bravo/bindings/v8_ppb.h"
 
-#include "bravo/bindings/v8_graphics_3d.h"
-#include "bravo/bindings/util.h"
 #include "base/strings/stringprintf.h"
+#include "bravo/bindings/util.h"
+#include "bravo/bindings/v8_graphics_3d.h"
 #include "bravo/plugin/instance.h"
+#include "v8/include/v8.h"
 
 namespace bravo {
 
@@ -25,7 +26,8 @@ void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 v8::Handle<v8::FunctionTemplate> CreateLogBinding() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   templ->SetCallHandler(LogCallback);
   return handle_scope.Close(templ);
@@ -34,7 +36,7 @@ v8::Handle<v8::FunctionTemplate> CreateLogBinding() {
 }
 
 v8::Handle<v8::ObjectTemplate> CreatePPBBindings() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::ObjectTemplate> templ = v8::ObjectTemplate::New();
   templ->SetInternalFieldCount(kNumberOfInternalFields);
   templ->Set(v8::String::NewSymbol("log"), CreateLogBinding());

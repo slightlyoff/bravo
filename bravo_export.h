@@ -5,7 +5,6 @@
 #ifndef BRAVO_BRAVO_EXPORT_H_
 #define BRAVO_BRAVO_EXPORT_H_
 
-#if defined(COMPONENT_BUILD)
 #if defined(WIN32)
 
 #if defined(BRAVO_IMPLEMENTATION)
@@ -20,10 +19,6 @@
 #else
 #define BRAVO_EXPORT
 #endif
-#endif
-
-#else // defined(COMPONENT_BUILD)
-#define BRAVO_EXPORT
 #endif
 
 #endif  // BRAVO_BRAVO_EXPORT_H_

@@ -5,9 +5,10 @@
 #include "bravo/bindings/v8_opengl_es2.h"
 
 #include "base/strings/stringprintf.h"
-#include "bravo/plugin/instance.h"
 #include "bravo/bindings/util.h"
+#include "bravo/plugin/instance.h"
 #include "bravo/plugin/ppb.h"
+#include "v8/include/v8.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -1074,7 +1075,7 @@ static const struct {
 }
 
 v8::Handle<v8::FunctionTemplate> CreateWebGLBindings() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   v8::Handle<v8::ObjectTemplate> proto = templ->PrototypeTemplate();
 

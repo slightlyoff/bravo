@@ -36,7 +36,7 @@ namespace {
 class DummyArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   virtual void* Allocate(size_t length) OVERRIDE { return malloc(length); }
   virtual void Free(void* data, size_t length) OVERRIDE { free(data); }
-  virtual void Free(void* data) OVERRIDE { CHECK(false); }
+  virtual void Free(void* data) { CHECK(false); }
 };
 
 }
@@ -261,7 +261,8 @@ PP_Bool Instance::HandleDocumentLoad(PP_Resource url_loader) {
 }
 
 PP_Bool Instance::HandleTouchEvent(PP_Resource touch_event) {
-  v8::HandleScope handle_scope;
+  // FIXME(slightlyoff): wire our isolate from the instance in the map
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   // TODO(abarth): We need to enter the script's context here insteadd of
   // returning.
   return PP_TRUE;

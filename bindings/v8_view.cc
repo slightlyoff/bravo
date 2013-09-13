@@ -47,7 +47,7 @@ void ClipRectCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 }
 
 v8::Handle<v8::FunctionTemplate> CreateViewBindings() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   v8::Handle<v8::ObjectTemplate> instTempl = templ->InstanceTemplate();
   instTempl->SetInternalFieldCount(kNumberOfInternalFields);
