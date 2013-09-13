@@ -1,0 +1,43 @@
+function main(p){
+  var log = p.log.bind(p);
+  log("script randomness: " + Math.random());
+  var gl;
+
+  var v = 0;
+
+  function drawFrame() {
+    v++;
+    var b = (1 + Math.sin(v / Math.PI / 7)) / 2;
+    gl.clearColor(0, 0, b, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.swapBuffers(drawFrame);
+  }
+
+  p.onchangeview = function(view) {
+    log("-- in p.onchangeview()");
+    log("--- isFullscreen: " + view.isFullscreen);
+    log("--- isVisible: " + view.isVisible);
+    log("--- isPageVisible: " + view.isPageVisible);
+    log("--- deviceScale: " + view.deviceScale);
+    log("--- cssScale: " + view.cssScale);
+    log("--- rect.x: " + view.rect.x);
+    log("--- rect.y: " + view.rect.y);
+    log("--- rect.width: " + view.rect.width);
+    log("--- rect.height: " + view.rect.height);
+    log("--- clipRect.x: " + view.clipRect.x);
+    log("--- clipRect.y: " + view.clipRect.y);
+    log("--- clipRect.width: " + view.clipRect.width);
+    log("--- clipRect.height: " + view.clipRect.height);
+
+    var rect = view.rect;
+
+    if (!gl) {
+      gl = new p.Graphics3D(rect);
+      drawFrame();
+    } else {
+      gl.resizeBuffers(rect);
+    }
+
+    // log("-- end p.onchangeview()");
+  };
+}

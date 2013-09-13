@@ -1,0 +1,123 @@
+function main(p){
+  var log = p.log.bind(p);
+  log("script randomness: " + Math.random());
+  var gl;
+
+  var v = 0;
+
+  function drawFrame() {
+    v++;
+    var b = (1 + Math.sin(v / Math.PI / 7)) / 2;
+    gl.clearColor(0, 0, b, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.swapBuffers(drawFrame);
+  }
+
+  p.onchangeview = function(view) {
+    var rect = view.rect;
+
+    if (!gl) {
+      gl = new p.Graphics3D(rect);
+
+      // Cribbed from:
+      //    https://developer.mozilla.org/samples/webgl/sample5/webgl-demo.js
+
+      // Create a buffer for the cube's vertices.
+      var cubeVerticesBuffer = gl.createBuffer();
+
+      // Select the cubeVerticesBuffer as the one to apply vertex
+      // operations to from here out.
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
+
+      var vertices = [
+        // Front face
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+
+        // Back face
+        -1.0, -1.0, -1.0,
+        -1.0,  1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0, -1.0, -1.0,
+
+        // Top face
+        -1.0,  1.0, -1.0,
+        -1.0,  1.0,  1.0,
+         1.0,  1.0,  1.0,
+         1.0,  1.0, -1.0,
+
+        // Bottom face
+        -1.0, -1.0, -1.0,
+         1.0, -1.0, -1.0,
+         1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+
+        // Right face
+         1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+
+        // Left face
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0
+      ];
+
+
+      gl.bufferData(gl.ARRAY_BUFFER,
+                    new Float32Array(vertices),
+                    gl.STATIC_DRAW);
+
+      var colors = [
+        [1.0,  1.0,  1.0,  1.0],    // Front face: white
+        [1.0,  0.0,  0.0,  1.0],    // Back face: red
+        [0.0,  1.0,  0.0,  1.0],    // Top face: green
+        [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
+        [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
+        [1.0,  0.0,  1.0,  1.0]     // Left face: purple
+      ];
+
+      var generatedColors = [];
+
+      for (var j=0; j<6; j++) {
+        var c = colors[j];
+
+        // Repeat each color four times for the four vertices of the face
+
+        for (var i=0; i<4; i++) {
+          generatedColors = generatedColors.concat(c);
+        }
+      }
+
+      var cubeVerticesColorBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesColorBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(generatedColors), gl.STATIC_DRAW);
+
+      var cubeVerticesIndexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
+
+      var cubeVertexIndices = [
+        0,  1,  2,      0,  2,  3,    // front
+        4,  5,  6,      4,  6,  7,    // back
+        8,  9,  10,     8,  10, 11,   // top
+        12, 13, 14,     12, 14, 15,   // bottom
+        16, 17, 18,     16, 18, 19,   // right
+        20, 21, 22,     20, 22, 23    // left
+      ]
+
+      // Now send the element array to GL
+
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+          new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+
+      drawFrame();
+    } else {
+      gl.resizeBuffers(rect);
+    }
+  };
+}
