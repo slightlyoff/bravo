@@ -28,7 +28,9 @@ Bravo, conceptually, is the lowest level of the web platform. To a web developer
 
 From an implementation perspective, bravo defines the interfaces to JavaScript for system-provided services. We are defining these APIs as we go and bootstrapping on top of the [Pepper C API](https://developers.google.com/native-client/pepperc/) in the Chromium prototype.
 
-Eventually all Bravo APIs (which need not resemble Pepper APIs) are candidates for standardization. The runtime language -- JavaScript -- is already a web standard.
+Eventually all Bravo APIs (which need not resemble Pepper APIs) will be candidates for standardization. The runtime language -- JavaScript -- is already a web standard.
+
+Libraries built on top of Bravo may implement other standards (such as HTML, DOM, etc.) or provide alternative forms which reduce legacy baggage.
 
 ## Bravo Content
 
