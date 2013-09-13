@@ -11,7 +11,7 @@ index 85a88c4..abade85 100644
          '../media/media.gyp:media',
          '../net/net.gyp:net',
 diff --git a/content/shell/common/shell_content_client.cc b/content/shell/common/shell_content_client.cc
-index 495ad85..22ad41b 100644
+index 495ad85..dfaac3e 100644
 --- a/content/shell/common/shell_content_client.cc
 +++ b/content/shell/common/shell_content_client.cc
 @@ -7,7 +7,9 @@
@@ -36,7 +36,7 @@ index 495ad85..22ad41b 100644
 +  entry_points.initialize_module = bravo::Module::PPP_InitializeModule;
 +
 +  PepperPluginInfo info;
-+  // info.is_internal = true;
++  info.is_internal = true;
 +  info.is_out_of_process = true;
 +  info.path = base::FilePath(FILE_PATH_LITERAL("internal-bravo"));
 +  info.internal_entry_points = entry_points;

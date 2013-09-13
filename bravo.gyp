@@ -8,7 +8,8 @@
   },
   'targets': [{
     'target_name': 'bravo_plugin',
-    'type': 'shared_library',
+    'type': 'static_library',
+    # 'type': 'shared_library',
     'include_dirs': [
       '..',
     ],
