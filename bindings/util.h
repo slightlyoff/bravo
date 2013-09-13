@@ -81,6 +81,29 @@ inline v8::Handle<v8::Object> InstantiateObject(v8::Handle<v8::ObjectTemplate> t
     return instance;
 }
 
+struct MethodConfiguration {
+  const char* const name;
+  v8::FunctionCallback callback;
+};
+
+struct ConstantConfiguration {
+  const char* const name;
+  unsigned int value;
+};
+
+v8::Handle<v8::FunctionTemplate> CreateBindings(
+    v8::FunctionCallback ctorCallback,
+    const ConstantConfiguration* constants, size_t constantCount,
+    const MethodConfiguration* methods, size_t methodCount);
+
+void InstallConstants(v8::Handle<v8::ObjectTemplate> proto,
+    const ConstantConfiguration* constants, size_t constantCount);
+
+void InstallMethods(v8::Handle<v8::ObjectTemplate> proto,
+    const MethodConfiguration* methods, size_t methodCount);
+
+v8::Handle<v8::Value> PPVarToV8Value(v8::Isolate*, PP_Var);
+
 }
 
 #endif  // BRAVO_BINDINGS_UTIL_H_

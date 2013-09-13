@@ -47,6 +47,10 @@ bool PPB_Init(PPB_GetInterface get_interface) {
       get_interface(PPB_TOUCH_INPUT_EVENT_INTERFACE));
   ppb.url_loader = reinterpret_cast<const PPB_URLLoader*>(
       get_interface(PPB_URLLOADER_INTERFACE));
+  ppb.url_request_info = reinterpret_cast<const PPB_URLRequestInfo*>(
+      get_interface(PPB_URLREQUESTINFO_INTERFACE));
+  ppb.url_response_info = reinterpret_cast<const PPB_URLResponseInfo*>(
+      get_interface(PPB_URLRESPONSEINFO_INTERFACE));
   ppb.var = reinterpret_cast<const PPB_Var*>(
       get_interface(PPB_VAR_INTERFACE));
   ppb.view = reinterpret_cast<const PPB_View*>(

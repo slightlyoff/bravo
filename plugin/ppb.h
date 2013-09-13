@@ -23,6 +23,8 @@
 #include "ppapi/c/ppb_message_loop.h"
 #include "ppapi/c/ppb_opengles2.h"
 #include "ppapi/c/ppb_url_loader.h"
+#include "ppapi/c/ppb_url_request_info.h"
+#include "ppapi/c/ppb_url_response_info.h"
 #include "ppapi/c/ppb_var.h"
 #include "ppapi/c/ppb_view.h"
 
@@ -48,6 +50,8 @@ struct PPB {
   const PPB_OpenGLES2* opengl_es2;
   const PPB_TouchInputEvent* touch_input_event;
   const PPB_URLLoader* url_loader;
+  const PPB_URLRequestInfo* url_request_info;
+  const PPB_URLResponseInfo* url_response_info;
   const PPB_Var* var;
   const PPB_View* view;
 };
