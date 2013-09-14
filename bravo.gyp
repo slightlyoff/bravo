@@ -22,7 +22,9 @@
       'BRAVO_IMPLEMENTATION'
     ],
     'sources': [
+      'bindings/macros.h',
       'bindings/util.h',
+      'bindings/util.cc',
       'bindings/v8_completion_callback.cc',
       'bindings/v8_completion_callback.h',
       'bindings/v8_graphics_3d.cc',
@@ -35,6 +37,12 @@
       'bindings/v8_ppb.h',
       'bindings/v8_rect.h',
       'bindings/v8_touch_point.h',
+      'bindings/v8_url_loader.cc',
+      'bindings/v8_url_loader.h',
+      'bindings/v8_url_response_info.cc',
+      'bindings/v8_url_response_info.h',
+      'bindings/v8_url_request_info.cc',
+      'bindings/v8_url_request_info.h',
       'bindings/v8_view.cc',
       'bindings/v8_view.h',
       'bravo_export.h',

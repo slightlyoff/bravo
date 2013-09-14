@@ -1,0 +1,36 @@
+function main(p){
+  var log = p.log.bind(p);
+
+  try {
+    var urlRequestInfo = new p.URLRequestInfo();
+    urlRequestInfo.setProperty(0, 'test.bravo');  // PP_URLREQUESTPROPERTY_URL
+    urlRequestInfo.setProperty(1, 'GET');  // PP_URLREQUESTPROPERTY_METHOD
+    urlRequestInfo.setProperty(2, 'X-Custom: foo');  // PP_URLREQUESTPROPERTY_HEADERS = 2
+
+    var urlLoader = new p.URLLoader();
+    urlLoader.open(urlRequestInfo, function(result) {
+      if (result == 0) {
+        log('done');
+        log(urlLoader.getResponseInfo());
+        log(urlLoader.getResponseInfo().getProperty(0));  // PP_URLRESPONSEPROPERTY_URL
+      } else if (result < 0) {
+        log('error: ' + result);
+      } else {
+        log('ok: ' + result);
+        // log(urlLoader.getResponseInfo());
+        var buffer = new ArrayBuffer(256);
+        urlLoader.readResponseBody(buffer, function(result) {
+          log('readResponseBody callback: ' + result);
+        });
+      }
+    });
+
+    // var d = Date.now();
+    // while (Date.now() - d < 1000) { }
+
+    // log('close: ' + urlLoader.close());
+  } catch (ex) {
+    log(ex.message);
+    log(ex.stack);
+  }
+}
