@@ -648,12 +648,9 @@ void VertexAttribPointer(const v8::FunctionCallbackInfo<v8::Value>& info) {
 V8_BIND_4(opengl_es2, Viewport,
     ARG_GLint, ARG_GLint, ARG_GLsizei, ARG_GLsizei)
 
-static const size_t kFunctionCount = 107;
+static const size_t kMethodCount = 107;
 
-static const struct {
-  const char* name;
-  v8::FunctionCallback callback;
-} g_functions[kFunctionCount] = {
+static const MethodConfiguration g_methods[kMethodCount] = {
   { "activeTexture", ActiveTexture },
   { "attachShader", AttachShader },
   { "bindBuffer", BindBuffer },
@@ -765,10 +762,7 @@ static const struct {
 
 static const size_t kConstantCount = 301;
 
-static const struct {
-  const char* name;
-  unsigned int value;
-} g_constants[kConstantCount] = {
+static const ConstantConfiguration g_constants[kConstantCount] = {
   { "DEPTH_BUFFER_BIT", GL_DEPTH_BUFFER_BIT },
   { "STENCIL_BUFFER_BIT", GL_STENCIL_BUFFER_BIT },
   { "COLOR_BUFFER_BIT", GL_COLOR_BUFFER_BIT },
@@ -1079,15 +1073,8 @@ v8::Handle<v8::FunctionTemplate> CreateWebGLBindings() {
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   v8::Handle<v8::ObjectTemplate> proto = templ->PrototypeTemplate();
 
-  for (size_t i = 0; i < kConstantCount; ++i) {
-    proto->Set(v8::String::NewSymbol(g_constants[i].name),
-               v8::Uint32::New(g_constants[i].value));
-  }
-
-  for (size_t i = 0; i < kFunctionCount; ++i) {
-    proto->Set(v8::String::NewSymbol(g_functions[i].name),
-               v8::FunctionTemplate::New(g_functions[i].callback));
-  }
+  InstallConstants(proto, g_constants, kConstantCount);
+  InstallMethods(proto, g_methods, kMethodCount);
 
   return handle_scope.Close(templ);
 }
