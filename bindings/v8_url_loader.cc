@@ -78,16 +78,33 @@ void ReadResponseBody(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Handle<v8::ArrayBuffer> buffer =
         v8::Handle<v8::ArrayBuffer>::Cast(info[0]);
 
+    // TODO: Need to associate the external Contents with this array buffer so
+    // that we can use it again.
+    // TODO: Need to clear the memory manually when the buffer is no longer
+    // reachable. A weak persistent handle with a callback should do it.
+    v8::ArrayBuffer::Contents contents = buffer->Externalize();
+
     info.GetReturnValue().Set(v8::Integer::New(
         ppb.url_loader->ReadResponseBody(
-          GetPPResource(info),
-          buffer->Externalize().Data(),
-          buffer->ByteLength(),
-          V8CompletionCallback::Create(info.GetIsolate(), callback))));
+            GetPPResource(info),
+            contents.Data(),
+            contents.ByteLength(),
+            V8CompletionCallback::Create(info.GetIsolate(), callback))));
     return;
   }
 
-  // Handle ArrayBufferView?
+  if (info[0]->IsArrayBufferView()) {
+    v8::Handle<v8::ArrayBufferView> view =
+        v8::Handle<v8::ArrayBufferView>::Cast(info[0]);
+    info.GetReturnValue().Set(v8::Integer::New(
+        ppb.url_loader->ReadResponseBody(
+            GetPPResource(info),
+            view->BaseAddress(),
+            view->ByteLength(),
+            V8CompletionCallback::Create(info.GetIsolate(), callback))));
+    return;
+  }
+
 }
 
 // int32_t (*FinishStreamingToFile)(PP_Resource loader,
