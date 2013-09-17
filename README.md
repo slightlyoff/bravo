@@ -34,7 +34,7 @@ Libraries built on top of Bravo may implement other standards (such as HTML, DOM
 
 ## Bravo Content
 
-To write Bravo content, it must be served with `Content-Type: application/bravo`. The `exmaples/` directory includes a [`.htaccess` file which shows how to enable this in Apache](https://github.com/slightlyoff/bravo/blob/master/examples/.htaccess).
+To write Bravo content, it must be served with `Content-Type: application/bravo`. The `examples/` directory includes a [`.htaccess` file which shows how to enable this in Apache](https://github.com/slightlyoff/bravo/blob/master/examples/.htaccess).
 
 The simplest thing that can possibly invoke bravo is `data:application/bravo,main(b){b.log('oh hai')}`.
 
