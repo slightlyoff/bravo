@@ -81,6 +81,7 @@ v8::Handle<v8::Value> PPVarToV8Value(v8::Isolate* isolate, PP_Var var) {
     case PP_VARTYPE_OBJECT:
     case PP_VARTYPE_ARRAY:
     case PP_VARTYPE_DICTIONARY:
+    case PP_VARTYPE_RESOURCE:
       NOTIMPLEMENTED();
   }
 

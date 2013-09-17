@@ -50,7 +50,7 @@ static const ConstantConfiguration g_constants[kConstantCount] = { };
 v8::Handle<v8::Object> URLResponseInfoToV8(PP_Resource resource) {
   DCHECK(ppb.url_response_info->IsURLResponseInfo(resource) == PP_TRUE);
 
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   v8::Handle<v8::ObjectTemplate> instTempl = templ->InstanceTemplate();
   instTempl->SetInternalFieldCount(kNumberOfInternalFields);
