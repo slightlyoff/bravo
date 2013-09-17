@@ -17,9 +17,10 @@ class BRAVO_EXPORT Module {
   static const void* PPP_GetInterface(const char*);
   static int PPP_InitializeModule(PP_Module, PPB_GetInterface);
 
-  static const char kMimeType[];
-  static const char kMimeExtension[];
   static const char kMimeDescription[];
+  static const char kMimeExtension[];
+  static const char kMimeType[];
+  static const char kPluginName[];
 
   static const uint32 kPermissions = ppapi::PERMISSION_PRIVATE |
                                      ppapi::PERMISSION_DEV;

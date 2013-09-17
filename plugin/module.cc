@@ -16,9 +16,10 @@
 
 namespace bravo {
 
-const char Module::kMimeType[] = "application/bravo";
-const char Module::kMimeExtension[] = "bravo";
 const char Module::kMimeDescription[] = "Bravo Framework";
+const char Module::kMimeExtension[] = "bravo";
+const char Module::kMimeType[] = "application/bravo";
+const char Module::kPluginName[] = "Bravo";
 
 const void* Module::PPP_GetInterface(const char* interface_name) {
   if (strcmp(interface_name, PPP_INSTANCE_INTERFACE) == 0) {

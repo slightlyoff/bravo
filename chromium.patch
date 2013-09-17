@@ -1,52 +1,87 @@
 diff --git a/content/content_shell.gypi b/content/content_shell.gypi
-index 85a88c4..abade85 100644
+index 85a88c4..8852df1 100644
 --- a/content/content_shell.gypi
 +++ b/content/content_shell.gypi
-@@ -41,6 +41,7 @@
+@@ -41,6 +41,8 @@
          'content_resources.gyp:content_resources',
          '../base/base.gyp:base',
          '../base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
 +        '../bravo/bravo.gyp:bravo_plugin',
++        '../bravo/bravo.gyp:copy_bravo_plugin',
          '../ipc/ipc.gyp:ipc',
          '../media/media.gyp:media',
          '../net/net.gyp:net',
 diff --git a/content/shell/common/shell_content_client.cc b/content/shell/common/shell_content_client.cc
-index 495ad85..dfaac3e 100644
+index 495ad85..84d9399 100644
 --- a/content/shell/common/shell_content_client.cc
 +++ b/content/shell/common/shell_content_client.cc
-@@ -7,7 +7,9 @@
+@@ -5,9 +5,13 @@
+ #include "content/shell/common/shell_content_client.h"
+ 
  #include "base/command_line.h"
++#include "base/path_service.h"
  #include "base/strings/string_piece.h"
  #include "base/strings/utf_string_conversions.h"
 +#include "bravo/plugin/module.h"
++#include "ppapi/shared_impl/ppapi_permissions.h"
  #include "content/public/common/content_switches.h"
 +#include "content/public/common/pepper_plugin_info.h"
  #include "content/shell/common/shell_switches.h"
  #include "grit/shell_resources.h"
  #include "grit/webkit_resources.h"
-@@ -18,9 +20,37 @@
+@@ -18,9 +22,67 @@
  
  namespace content {
  
 +namespace {
 +
++const base::FilePath::CharType kInternalBravoPluginFileName[] =
++#if defined(OS_WIN)
++    FILE_PATH_LITERAL("ppGoogleBravoPluginChrome.dll");
++#elif defined(OS_MACOSX)
++    FILE_PATH_LITERAL("ppGoogleBravoPluginChrome.plugin");
++#else  // Linux and Chrome OS
++    FILE_PATH_LITERAL("libppGoogleBravoPluginChrome.so");
++#endif
++
++const char kBravoMimeDescription[] = "Bravo Framework";
++const char kBravoMimeExtension[] = "bravo";
++const char kBravoMimeType[] = "application/bravo";
++const char kBravoPluginName[] = "Bravo";
++
++bool GetBravoPath(base::FilePath* result) {
++  if(!PathService::Get(base::DIR_MODULE, result)) {
++    return false;
++  }
++#if defined(OS_MACOSX) && !defined(OS_IOS)
++  // Content Shell on OS X is nested much more deeply.
++  *result = result->DirName();
++  *result = result->DirName();
++  *result = result->DirName();
++  *result = result->DirName();
++#endif
++  *result = result->Append("plugins");
++  // LOG(INFO) << "Bravo DIR: " << result->value();
++  *result = result->Append(kInternalBravoPluginFileName);
++  // LOG(INFO) << "Bravo location: " << result->value();
++  return true;
++}
++
 +PepperPluginInfo BravoPluginInfo() {
-+  PepperPluginInfo::EntryPoints entry_points;
-+  entry_points.get_interface = bravo::Module::PPP_GetInterface;
-+  entry_points.initialize_module = bravo::Module::PPP_InitializeModule;
++  PepperPluginInfo bravo;
++  bravo.name = kBravoPluginName;
++  bravo.is_out_of_process = true;
++  bravo.is_sandboxed = true;
++  bravo.mime_types.push_back(WebPluginMimeType(
++      kBravoMimeType,
++      kBravoMimeExtension,
++      kBravoMimeDescription));
++  bravo.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
 +
-+  PepperPluginInfo info;
-+  info.is_internal = true;
-+  info.is_out_of_process = true;
-+  info.path = base::FilePath(FILE_PATH_LITERAL("internal-bravo"));
-+  info.internal_entry_points = entry_points;
-+  info.mime_types.push_back(WebPluginMimeType(
-+      bravo::Module::kMimeType,
-+      bravo::Module::kMimeExtension,
-+      bravo::Module::kMimeDescription));
-+  info.permissions = bravo::Module::kPermissions;
-+
-+  return info;
++  base::FilePath path;
++  GetBravoPath(&path);
++  bravo.path = path;
++  return bravo;
 +}
 +
 +}

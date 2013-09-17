@@ -35,6 +35,7 @@ namespace {
 
 class DummyArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   virtual void* Allocate(size_t length) OVERRIDE { return malloc(length); }
+  virtual void* AllocateUninitialized(size_t length) OVERRIDE { return malloc(length); }
   virtual void Free(void* data, size_t length) OVERRIDE { free(data); }
   virtual void Free(void* data) { CHECK(false); }
 };
@@ -172,9 +173,10 @@ bool GenerateEntropy(unsigned char* buffer, size_t amount) {
 // Instance methods
 //
 void Instance::DidChangeView(PP_Resource view) {
-  if (view_) {
+  if (view_ && ppb.view->IsView(view_)) {
     ppb.core->ReleaseResource(view_);
   }
+
   view_ = view;
   ppb.core->AddRefResource(view_);
   RunChangeViewCallback();
@@ -309,8 +311,8 @@ void Instance::InitializeV8() {
   if (v8_initialized_)
     return;
 
-  // DummyArrayBufferAllocator array_buffer_allocator;
-  // v8::V8::SetArrayBufferAllocator(&array_buffer_allocator);
+  DummyArrayBufferAllocator array_buffer_allocator;
+  v8::V8::SetArrayBufferAllocator(&array_buffer_allocator);
   v8::V8::InitializeICU();
 
   // Debugging v8 flags
@@ -360,6 +362,9 @@ void Instance::ParseAndRunScript(std::string source) {
 
 void Instance::Main(v8::Handle<v8::Context> context) {
   if (!isolate_)
+    return;
+
+  if (!instance_)
     return;
 
   v8::Handle<v8::Object> local_pepper = CreatePPBBindings()->NewInstance();

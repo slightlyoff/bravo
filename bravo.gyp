@@ -6,10 +6,10 @@
   'variables': {
     'chromium_code': 1,
   },
-  'targets': [{
-    'target_name': 'bravo_plugin',
+  'targets': [
+  {
+    'target_name': 'bravo_base',
     'type': 'static_library',
-    # 'type': 'shared_library',
     'include_dirs': [
       '..',
     ],
@@ -17,9 +17,6 @@
       '../ui/gl/gl.gyp:gl',
       '../base/base.gyp:base',
       '../v8/tools/gyp/v8.gyp:v8',
-    ],
-    'defines': [
-      'BRAVO_IMPLEMENTATION'
     ],
     'sources': [
       'bindings/macros.h',
@@ -52,6 +49,82 @@
       'plugin/module.h',
       'plugin/ppb.cc',
       'plugin/ppb.h',
+    ],
+  },
+  {
+    'target_name': 'bravo_plugin',
+    'type': 'none',
+    'suppress_wildcard': 1,
+    'include_dirs': [
+      '..',
+    ],
+    'sources': [
+      'plugin/exports.h',
+      'plugin/exports.cc',
+    ],
+    'dependencies': [
+      '../ppapi/ppapi.gyp:ppapi_c',
+      'bravo_base',
+    ],
+    'defines': [
+      'BRAVO_IMPLEMENTATION'
+    ],
+    'conditions': [
+      ['os_posix==1 and OS!="mac"', {
+        'cflags': ['-fvisibility=hidden'],
+        'type': 'shared_library',
+      }],
+      ['OS=="win"', {
+        'type': 'shared_library',
+      }],
+      ['OS=="mac"', {
+        'type': 'loadable_module',
+        'mac_bundle': 1,
+        'product_name': 'ppGoogleBravoPluginChrome',
+        'product_extension': 'plugin',
+        'xcode_settings': {
+          'OTHER_LDFLAGS': [
+            # '-Wl,-exported_symbols_list <(DEPTH)/bravo/ppapi.def'
+            # Not to strip important symbols by -Wl,-dead_strip.
+            '-Wl,-exported_symbol,_PPP_GetInterface',
+            '-Wl,-exported_symbol,_PPP_InitializeModule',
+            '-Wl,-exported_symbol,_PPP_ShutdownModule'
+          ],
+        },
+      }],
+      ['OS=="mac" and mac_breakpad==1', {
+        'variables': {
+          # A real .dSYM is needed for dump_syms to operate on.
+          'mac_real_dsym': 1,
+        },
+      }],
+    ],
+  },
+  {
+    'target_name': 'copy_bravo_plugin',
+    'type': 'none',
+    'dependencies': [
+        'bravo_plugin',
+    ],
+    'conditions': [
+        ['OS=="win"', {
+            'copies': [{
+                'destination': '<(PRODUCT_DIR)/plugins',
+                'files': ['<(PRODUCT_DIR)/ppGoogleBravoPluginChrome.dll'],
+            }],
+        }],
+        ['OS=="mac"', {
+            'copies': [{
+                'destination': '<(PRODUCT_DIR)/plugins/',
+                'files': ['<(PRODUCT_DIR)/ppGoogleBravoPluginChrome.plugin/'],
+            }],
+        }],
+        ['os_posix == 1 and OS != "mac"', {
+            'copies': [{
+                'destination': '<(PRODUCT_DIR)/plugins',
+                'files': ['<(PRODUCT_DIR)/ppGoogleBravoPluginChrome.so'],
+            }],
+        }],
     ],
   }],
 }
