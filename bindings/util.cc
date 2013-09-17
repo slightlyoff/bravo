@@ -15,7 +15,7 @@ v8::Handle<v8::FunctionTemplate> CreateBindings(
     v8::FunctionCallback ctorCallback,
     const ConstantConfiguration* constants, size_t constantCount,
     const MethodConfiguration* methods, size_t methodCount) {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::FunctionTemplate> templ = v8::FunctionTemplate::New();
   templ->SetCallHandler(ctorCallback);
 

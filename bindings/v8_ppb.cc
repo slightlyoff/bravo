@@ -30,7 +30,7 @@ v8::Handle<v8::FunctionTemplate> CreateLogBinding() {
 }
 
 v8::Handle<v8::ObjectTemplate> CreatePPBBindings() {
-  v8::HandleScope handle_scope;
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Handle<v8::ObjectTemplate> templ = v8::ObjectTemplate::New();
   templ->SetInternalFieldCount(kNumberOfInternalFields);
   templ->Set(v8::String::NewSymbol("log"), CreateLogBinding());
