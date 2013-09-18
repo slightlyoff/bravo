@@ -12,7 +12,7 @@
 
 namespace bravo {
 
-class BRAVO_EXPORT Module {
+class Module {
  public:
   static const void* PPP_GetInterface(const char*);
   static int PPP_InitializeModule(PP_Module, PPB_GetInterface);
