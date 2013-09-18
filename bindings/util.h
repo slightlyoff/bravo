@@ -103,6 +103,7 @@ void InstallMethods(v8::Handle<v8::ObjectTemplate> proto,
     const MethodConfiguration* methods, size_t methodCount);
 
 v8::Handle<v8::Value> PPVarToV8Value(v8::Isolate*, PP_Var);
+PP_Var V8ValueToPPVar(v8::Handle<v8::Value>);
 
 }
 

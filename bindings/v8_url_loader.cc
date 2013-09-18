@@ -23,6 +23,11 @@ void Open(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 2)
     return;
 
+  PP_Resource url_loader = GetPPResource(info);
+
+  if (ppb.url_loader->IsURLLoader(url_loader) != PP_TRUE)
+    return;
+
   if (!info[0]->IsObject())
     return;
 
@@ -33,11 +38,18 @@ void Open(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (!info[1]->IsFunction())
     return;
 
+  // v8::Persistent<v8::Object> arg0_p(info.GetIsolate(), v8::Handle<v8::Object>::Cast(info[0]));
+  // v8::Persistent<v8::Function> arg1_p(info.GetIsolate(), v8::Handle<v8::Function>::Cast(info[1]));
+  // v8::Persistent<v8::Object> holder_p(info.GetIsolate(), info.Holder());
+
+  // ppb.core->AddRefResource(GetPPResource(info));
+  // ppb.core->AddRefResource(GetPPResource(v8::Handle<v8::Object>::Cast(info[0])));
+
   // TODO: Need to make holder persistent and release it in close?
 
   v8::Handle<v8::Function> callback = v8::Handle<v8::Function>::Cast(info[1]);
   info.GetReturnValue().Set(v8::Integer::New(ppb.url_loader->Open(
-      GetPPResource(info),
+      url_loader,
       request_info,
       V8CompletionCallback::Create(info.GetIsolate(), callback))));
 }
@@ -52,10 +64,27 @@ void Open(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // PP_Bool (*GetDownloadProgress)(PP_Resource loader,
 //                                int64_t* bytes_received,
 //                                int64_t* total_bytes_to_be_received);
+void GetDownloadProgress(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  int64_t bytes_received = 0;
+  int64_t total_bytes_to_be_received = 0;
+  PP_Bool ok = ppb.url_loader->GetDownloadProgress(
+      GetPPResource(info),
+      &bytes_received,
+      &total_bytes_to_be_received);
+
+  if (ok == PP_FALSE)
+    return;
+
+  v8::Handle<v8::Object> result = v8::Object::New();
+  result->Set(v8::String::NewSymbol("bytesReceived"),
+              v8::Integer::New(bytes_received));
+  result->Set(v8::String::NewSymbol("totalBytesToBeReceived"),
+              v8::Integer::New(total_bytes_to_be_received));
+  info.GetReturnValue().Set(result);
+}
 
 // PP_Resource (*GetResponseInfo)(PP_Resource loader);
 void GetResponseInfo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // TODO: Needs to do ToV8 since this is the first time we see this object.
   info.GetReturnValue().Set(
       URLResponseInfoToV8(
           ppb.url_loader->GetResponseInfo(GetPPResource(info))));
@@ -117,13 +146,14 @@ void Close(const v8::FunctionCallbackInfo<v8::Value>& info) {
   // TODO: Make weak
 }
 
-static const size_t kMethodCount = 4;
+static const size_t kMethodCount = 5;
 
 static const MethodConfiguration g_methods[kMethodCount] = {
   { "close", Close },
+  { "getDownloadProgress", GetDownloadProgress },
   { "getResponseInfo", GetResponseInfo },
-  { "readResponseBody", ReadResponseBody },
   { "open", Open },
+  { "readResponseBody", ReadResponseBody },
 };
 
 static const size_t kConstantCount = 0;

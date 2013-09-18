@@ -23,14 +23,10 @@ void SetProperty(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 2)
     return;
 
-  v8::Handle<v8::String> value = info[1]->ToString();
-  v8::String::Utf8Value str(value);
-  PP_Var str_var = ppb.var->VarFromUtf8(*str, str.length());
-
   info.GetReturnValue().Set(ppb.url_request_info->SetProperty(
       GetPPResource(info),
       static_cast<PP_URLRequestProperty>(info[0]->Int32Value()),
-      str_var));
+      V8ValueToPPVar(info[1])));
 }
 
   // PP_Bool (*AppendDataToBody)(PP_Resource request,
