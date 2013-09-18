@@ -53,6 +53,7 @@
   },
   {
     'target_name': 'bravo_plugin',
+    'product_name': 'ppGoogleBravoPluginChrome',
     'type': 'none',
     'suppress_wildcard': 1,
     'include_dirs': [
@@ -81,7 +82,6 @@
       ['OS=="mac"', {
         'type': 'loadable_module',
         'mac_bundle': 1,
-        'product_name': 'ppGoogleBravoPluginChrome',
         'product_extension': 'plugin',
         'xcode_settings': {
           'OTHER_LDFLAGS': [
@@ -123,7 +123,7 @@
         ['os_posix == 1 and OS != "mac"', {
             'copies': [{
                 'destination': '<(PRODUCT_DIR)/plugins',
-                'files': ['<(PRODUCT_DIR)/ppGoogleBravoPluginChrome.so'],
+                'files': ['<(PRODUCT_DIR)/lib/libppGoogleBravoPluginChrome.so'],
             }],
         }],
     ],
