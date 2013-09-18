@@ -10,7 +10,7 @@ Fine. Suppose you want to know how to build, run, and contribute eh?
 
  1. Grab a [chromium checkout](http://dev.chromium.org/developers/how-tos/get-the-code). Some find that the [git submodule flow is faster](https://code.google.com/p/chromium/wiki/UsingGitSubmodules), but any method should work.
  1. `cd src && git clone https://github.com/slightlyoff/bravo`
- 1. git apply --check bravo/chromium.patch # if clean, proceed, else ping for help
+ 1. `git apply --check bravo/chromium.patch` # if clean, proceed, else ping for help
  1. `git apply bravo/chromium.patch`
  1. `git runhooks` or `build/chromium_gyp` to include Bravo in the build
  1. Build content shell or chrome, e.g. `ninja -C out/Release content_shell`
