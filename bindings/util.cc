@@ -88,4 +88,29 @@ v8::Handle<v8::Value> PPVarToV8Value(v8::Isolate* isolate, PP_Var var) {
   return v8::Handle<v8::Value>();
 }
 
+PP_Var V8ValueToPPVar(v8::Handle<v8::Value> value) {
+  if (value->IsString()) {
+    v8::String::Utf8Value str(value);
+    return ppb.var->VarFromUtf8(*str, str.length());
+  }
+
+  if (value->IsBoolean())
+    return PP_MakeBool(value->BooleanValue() ? PP_TRUE : PP_FALSE);
+
+  if (value->IsInt32())
+    return PP_MakeInt32(value->Int32Value());
+
+  if (value->IsNumber())
+    return PP_MakeDouble(value->NumberValue());
+
+  if (value->IsNull())
+    return PP_MakeNull();
+
+  if (value->IsUndefined())
+    return PP_MakeUndefined();
+
+  NOTIMPLEMENTED();
+  return PP_MakeUndefined();
+}
+
 }

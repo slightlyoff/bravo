@@ -2,16 +2,20 @@ function loadUrl(p, url, callback, errback) {
   var urlRequestInfo = new p.URLRequestInfo();
   urlRequestInfo.setProperty(0, url);  // PP_URLREQUESTPROPERTY_URL
   urlRequestInfo.setProperty(1, 'GET');  // PP_URLREQUESTPROPERTY_METHOD
+  urlRequestInfo.setProperty(5, true); // PP_URLREQUESTPROPERTY_RECORDDOWNLOADPROGRESS
 
   var s = '';
   var data = new Uint8Array(256);
   var urlLoader = new p.URLLoader();
 
   function loadMore(result) {
+    p.log('progress: ' + JSON.stringify(urlLoader.getDownloadProgress()));
+
     if (result == 0) {
       callback(s);
       return;
     }
+
 
     if (result < 0) {
       errback(result);
@@ -48,7 +52,7 @@ function main(p) {
     var d = Date.now();
     while (Date.now() - d < 50) { }
 
-    log('close: ' + urlLoader.close());
+    // log('close: ' + urlLoader.close());
   } catch (ex) {
     log(ex.message);
     log(ex.stack);
