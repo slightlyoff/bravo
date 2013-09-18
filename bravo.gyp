@@ -64,6 +64,7 @@
     ],
     'dependencies': [
       '../ppapi/ppapi.gyp:ppapi_c',
+      '../ppapi/ppapi_internal.gyp:ppapi_shared',
       'bravo_base',
     ],
     'defines': [
