@@ -13,6 +13,9 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+// See also:
+//  https://code.google.com/p/chromium/codesearch#chromium/src/third_party/WebKit/Source/core/html/canvas/WebGLRenderingContext.cpp
+
 namespace bravo {
 
 namespace {
@@ -210,6 +213,30 @@ namespace {
     info.GetReturnValue().Set(v8::String::New(buffer, returnedLength));       \
   }
 
+
+#define V8_BIND_UNIFORM_MATRIX(interface, name, v8type, typeTest, glType)     \
+  void name(const v8::FunctionCallbackInfo<v8::Value>& info) {                \
+    if (info.Length() < 3)                                                    \
+      return;                                                                 \
+                                                                              \
+    /* TODO: handle regular arrays like WebGL does */                         \
+    if (!info[2]->typeTest())                                                 \
+      return;                                                                 \
+                                                                              \
+    GLint location = ARG_GLint(info[0]);                                      \
+    GLboolean transpose =  ARG_GLboolean(info[1]);                            \
+    v8::Handle<v8::v8type> arr = v8::Handle<v8::v8type>::Cast(info[2]);       \
+    /* FIXME: LEAKS EXTERNALIZED */                                           \
+    void * data = arr->Buffer()->Externalize().Data();                        \
+    ppb.opengl_es2->UniformMatrix4fv(                                         \
+        GetPPResource(info),                                                  \
+        location,                                                             \
+        1,                                                                    \
+        transpose,                                                            \
+        reinterpret_cast<const glType *>(data));                              \
+  }
+
+
 V8_BIND_1(opengl_es2, ActiveTexture, ARG_GLenum)
 V8_BIND_2(opengl_es2, AttachShader, ARG_GLuint, ARG_GLuint)
   // void (*BindAttribLocation)(
@@ -322,20 +349,25 @@ void DrawElements(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 4)
     return;
 
-  GLint theBufferFromBefore;
-  ppb.opengl_es2->GetIntegerv(GetPPResource(info), GL_ELEMENT_ARRAY_BUFFER_BINDING, &theBufferFromBefore);
+  // GLint theBufferFromBefore;
+  // ppb.opengl_es2->GetIntegerv(GetPPResource(info), GL_ELEMENT_ARRAY_BUFFER_BINDING, &theBufferFromBefore);
 
-  Log(theBufferFromBefore);
+  // Log("the buffer from before:");
+  // Log(theBufferFromBefore);
   // ppb.opengl_es2->Get(GL_ELEMENT_ARRAY_BUFFER, &theBufferFromBefore);
 
-  void* indices = &theBufferFromBefore + ARG_GLint(info[3]);
+  GLenum mode = ARG_GLenum(info[0]);
+  GLsizei count = ARG_GLsizei(info[1]);
+  GLenum elementType = ARG_GLenum(info[2]);
+  GLint indices = ARG_GLint(info[3]);
+  // void* indices = theBufferFromBefore + ARG_GLint(info[3]);
+  // Log(reinterpret_cast<int32_t>(indices));
 
-  ppb.opengl_es2->DrawElements(
-    GetPPResource(info),
-    ARG_GLenum(info[0]),
-    ARG_GLsizei(info[1]),
-    ARG_GLenum(info[2]),
-    indices);
+  ppb.opengl_es2->DrawElements(GetPPResource(info),
+                               mode,
+                               count,
+                               elementType,
+                               reinterpret_cast<void *>(indices));
 }
 
 V8_BIND_1(opengl_es2, Enable, ARG_GLenum)
@@ -420,18 +452,6 @@ void GetProgramParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
 void GetShaderParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 2)
     return;
-  /*
-  any getShaderParameter(WebGLShader? shader, GLenum pname) (OpenGL ES 2.0 §6.1.8, similar to man page)
-    Return the value for the passed pname given the passed shader. The type returned is the natural type for the requested pname, as given in the following table:
-      pname returned type
-      SHADER_TYPE GLenum
-      DELETE_STATUS GLboolean
-      COMPILE_STATUS  GLboolean
-    If pname is not in the table above, generates an INVALID_ENUM error and returns null.
-
-  Returns null if any OpenGL errors are generated during the execution of this function.
-  */
-
   GLenum name = ARG_GLenum(info[1]);
   GLint value;
   ppb.opengl_es2->GetShaderiv(GetPPResource(info),
@@ -479,7 +499,6 @@ void GetUniformLocation(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   v8::String::Utf8Value name(info[1]);
   const char* str = *name;
-  Log(str);
 
   GLint value = ppb.opengl_es2->GetUniformLocation(GetPPResource(info),
                                                    ARG_GLint(info[0]),
@@ -584,40 +603,37 @@ V8_BIND_3_V(opengl_es2, Uniform3iv, ARG_GLint, ARG_GLsizei, ARG_GLint, GLint)
 void Uniform4f(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 4)
     return;
-  Log(ARG_GLint(info[0]));
-  Log(ARG_GLfloat(info[1]));
-  Log(ARG_GLfloat(info[2]));
-  Log(ARG_GLfloat(info[3]));
-  Log(ARG_GLfloat(info[4]));
-  ppb.opengl_es2->Uniform4f(GetPPResource(info),
-                            ARG_GLint(info[0]),
-                            ARG_GLfloat(info[1]),
-                            ARG_GLfloat(info[2]),
-                            ARG_GLfloat(info[3]),
-                            ARG_GLfloat(info[4]));
+  GLint location = ARG_GLint(info[0]);
+  GLfloat f1 = ARG_GLfloat(info[1]);
+  GLfloat f2 = ARG_GLfloat(info[2]);
+  GLfloat f3 = ARG_GLfloat(info[3]);
+  GLfloat f4 = ARG_GLfloat(info[4]);
+  ppb.opengl_es2->Uniform4f(GetPPResource(info), location, f1, f2, f3, f4);
 }
 
-//V8_BIND_3_V(opengl_es2, Uniform4fv, ARG_GLint, ARG_GLsizei, ARG_GLfloat, GLfloat)
-// #define V8_BIND_3_V(interface, name, arg0, arg1, arg2, type)
 void Uniform4fv(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 3)
+  if (info.Length() < 2)
     return;
-  GLfloat v = ARG_GLfloat(info[2]);
+  // TODO: handle regular arrays like WebGL does
+  if (!info[1]->IsFloat32Array())
+    return;
+
+  GLint location = ARG_GLint(info[0]);
+  v8::Handle<v8::Float32Array> arr =
+      v8::Handle<v8::Float32Array>::Cast(info[1]);
+  // Log(arr->Length());
   ppb.opengl_es2->Uniform4fv(GetPPResource(info),
-                             ARG_GLint(info[0]),
-                             ARG_GLsizei(info[1]),
-                             &v);
+                             location,
+                             1,
+                             reinterpret_cast<const GLfloat *>(arr->Buffer()->Externalize().Data()));
 }
 
 V8_BIND_5(opengl_es2, Uniform4i,
     ARG_GLint, ARG_GLint, ARG_GLint, ARG_GLint, ARG_GLint)
 V8_BIND_3_V(opengl_es2, Uniform4iv, ARG_GLint, ARG_GLsizei, ARG_GLint, GLint)
-V8_BIND_4_V(opengl_es2, UniformMatrix2fv, ARG_GLint, ARG_GLsizei,
-    ARG_GLboolean, ARG_GLfloat, GLfloat)
-V8_BIND_4_V(opengl_es2, UniformMatrix3fv, ARG_GLint, ARG_GLsizei,
-    ARG_GLboolean, ARG_GLfloat, GLfloat)
-V8_BIND_4_V(opengl_es2, UniformMatrix4fv, ARG_GLint, ARG_GLsizei,
-    ARG_GLboolean, ARG_GLfloat, GLfloat)
+V8_BIND_UNIFORM_MATRIX(opengl_es2, UniformMatrix2fv, Float32Array, IsFloat32Array, GLfloat)
+V8_BIND_UNIFORM_MATRIX(opengl_es2, UniformMatrix3fv, Float32Array, IsFloat32Array, GLfloat)
+V8_BIND_UNIFORM_MATRIX(opengl_es2, UniformMatrix4fv, Float32Array, IsFloat32Array, GLfloat)
 V8_BIND_1(opengl_es2, UseProgram, ARG_GLuint)
 V8_BIND_1(opengl_es2, ValidateProgram, ARG_GLuint)
 V8_BIND_2(opengl_es2, VertexAttrib1f, ARG_GLuint, ARG_GLfloat)

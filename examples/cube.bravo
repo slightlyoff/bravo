@@ -1498,7 +1498,6 @@ function mvRotate(angle, v) {
 var cubeVerticesBuffer;
 var cubeVerticesColorBuffer;
 var cubeVerticesIndexBuffer;
-var cubeVerticesIndexBuffer;
 var cubeRotation = 0.0;
 var cubeXOffset = 0.0;
 var cubeYOffset = 0.0;
@@ -1682,15 +1681,12 @@ var v = 1;
 
 function drawScene(gl, log) {
   v++;
-  // log("drawScene");
   var b = (1 + Math.sin(v / Math.PI / 7)) / 2;
   gl.clearDepth(1.0);                 // Clear everything
   gl.clearColor(0, 1-b, b, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  // gl.clear(gl.COLOR_BUFFER_BIT);
 
   perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
-  // log(""+perspectiveMatrix);
 
   loadIdentity();
   mvTranslate([-0.0, 0.0, -6.0]);
@@ -1711,7 +1707,9 @@ function drawScene(gl, log) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
   setMatrixUniforms(gl, log);
   gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
-  /*
+
+  // gl.disable(gl.BLEND);
+  // gl.enable(gl.DEPTH_TEST);
 
   // Restore the original matrix
 
@@ -1738,7 +1736,6 @@ function drawScene(gl, log) {
   }
 
   lastCubeUpdateTime = currentTime;
-  */
 
   gl.swapBuffers(drawScene.bind(null, gl, log));
 }
@@ -1746,17 +1743,6 @@ function drawScene(gl, log) {
 function main(p){
   var log = p.log.bind(p);
   var gl;
-
-  /*
-  function drawFrame() {
-    v++;
-    var b = (1 + Math.sin(v / Math.PI / 7)) / 2;
-    gl.clearColor(0, 0, b, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    // gl.swapBuffers(function(){});
-    gl.swapBuffers(drawFrame);
-  }
-  */
 
   p.onchangeview = function(view) {
     var rect = view.rect;
@@ -1771,7 +1757,6 @@ function main(p){
       initShaders(gl, log);
       initBuffers(gl, log);
       drawScene(gl, log);
-      // drawFrame();
     } else {
       gl.resizeBuffers(rect);
     }

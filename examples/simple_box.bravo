@@ -33,7 +33,6 @@ function main(p){
         "",
         "void main() {",
         "  gl_FragColor = uColor;",
-        //"  gl_FragColor =  vec4(0.0, 0.0, 1.0, 1.0);",
         "}",
         ""].join("\n");
 
@@ -83,11 +82,7 @@ function main(p){
 
       gl.useProgram(program);
       var uColor = gl.getUniformLocation(program, "uColor");
-      log("getUniformLocation: " + gl.getUniformLocation(program, "uColor"));
-      // gl.uniform4fv(uColor, [0.0, 1.0, 0.0, 1.0]);
-      var thinger = new Float32Array([0.0, 1.0, 0.0, 1.0]);
-      // gl.uniform4fv(uColor, thinger);
-      gl.uniform4(uColor, 0.0, 0.0, 1.0, 1.0);
+      gl.uniform4fv(uColor, new Float32Array([0.0, 1.0, 0.0, 1.0]));
 
       var aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
       gl.enableVertexAttribArray(aVertexPosition);
