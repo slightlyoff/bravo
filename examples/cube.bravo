@@ -1723,10 +1723,10 @@ function drawScene(gl, log) {
     // if (delta > 17)
       // log("frame lag: "+delta);
 
-    cubeRotation += (30 * delta) / 1000.0;
-    cubeXOffset += xIncValue * ((30 * delta) / 1000.0);
-    cubeYOffset += yIncValue * ((30 * delta) / 1000.0);
-    cubeZOffset += zIncValue * ((30 * delta) / 1000.0);
+    cubeRotation += (3 * delta) / 1000.0;
+    cubeXOffset += xIncValue * ((3 * delta) / 1000.0);
+    cubeYOffset += yIncValue * ((3 * delta) / 1000.0);
+    cubeZOffset += zIncValue * ((3 * delta) / 1000.0);
 
     if (Math.abs(cubeYOffset) > 2.5) {
       xIncValue = -xIncValue;
