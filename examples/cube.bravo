@@ -1721,7 +1721,7 @@ function drawScene(gl, log) {
   if (lastCubeUpdateTime) {
     var delta = currentTime - lastCubeUpdateTime;
     // if (delta > 17)
-      // log("frame lag: "+delta);
+    //  log("frame lag: "+delta);
 
     cubeRotation += (3 * delta) / 1000.0;
     cubeXOffset += xIncValue * ((3 * delta) / 1000.0);

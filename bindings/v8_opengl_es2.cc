@@ -460,10 +460,11 @@ void GetProgramParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
 void GetShaderParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 2)
     return;
+  GLint shader = ARG_GLuint(info[0]);
   GLenum name = ARG_GLenum(info[1]);
   GLint value;
   ppb.opengl_es2->GetShaderiv(GetPPResource(info),
-                              ARG_GLuint(info[0]),
+                              shader,
                               name,
                               &value);
 
