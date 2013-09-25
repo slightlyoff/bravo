@@ -8,7 +8,10 @@ function main(p){
     var rect = view.rect;
 
     if (!gl) {
-      gl = new p.Graphics3D(rect);
+      var pixelWidth = rect.width * view.deviceScale;
+      var pixelHeight = rect.height * view.deviceScale;
+      gl = new p.Graphics3D({ width: pixelWidth,
+                              height: pixelHeight });
 
       /*
       gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -20,7 +23,7 @@ function main(p){
       drawFrame();
       */
 
-      gl.viewport(0, 0, rect.width, rect.height);
+      gl.viewport(0, 0, pixelWidth, pixelHeight);
       gl.clearColor(0, 0.5, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
 

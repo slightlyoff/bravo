@@ -1746,19 +1746,24 @@ function main(p){
 
   p.onchangeview = function(view) {
     var rect = view.rect;
+    // Run at full screen resolution (not CSS pixels)
+    var pixelWidth = rect.width * view.deviceScale;
+    var pixelHeight = rect.height * view.deviceScale;
+    var size = { width: pixelWidth, height: pixelHeight };
 
     if (!gl) {
-      gl = new p.Graphics3D(rect);
+      gl = new p.Graphics3D(size);
 
       gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
       gl.clearDepth(1.0);                 // Clear everything
       gl.enable(gl.DEPTH_TEST);           // Enable depth testing
       gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+      // gl.sampleCoverage(gl.)
       initShaders(gl, log);
       initBuffers(gl, log);
       drawScene(gl, log);
     } else {
-      gl.resizeBuffers(rect);
+      gl.resizeBuffers(size);
     }
   };
 }
