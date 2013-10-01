@@ -370,7 +370,8 @@ void Instance::Main(v8::Handle<v8::Context> context) {
   v8::Handle<v8::Object> local_pepper = CreatePPBBindings()->NewInstance();
   pepper_.Reset(isolate_, local_pepper);
 
-  SetPPResource(local_pepper, instance_);
+  // FIXME(slightlyoff): this blows up in debug. instance_ isn't a PP_Resource
+  // SetPPResource(local_pepper, instance_);
   v8::Handle<v8::Value> mainValue =
       context->Global()->Get(v8::String::NewSymbol("main"));
 
