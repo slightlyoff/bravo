@@ -13,16 +13,6 @@ function main(p){
       gl = new p.Graphics3D({ width: pixelWidth,
                               height: pixelHeight });
 
-      /*
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-      gl.clearDepth(1.0);                 // Clear everything
-      gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-      gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-      initShaders(gl, log);
-      initBuffers(gl, log);
-      drawFrame();
-      */
-
       gl.viewport(0, 0, pixelWidth, pixelHeight);
       gl.clearColor(0, 0.5, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -101,13 +91,4 @@ function main(p){
     }
   };
 }
-
-
-
-
-
-
-
-
-
 
