@@ -211,7 +211,7 @@ namespace {
                                                                               \
     GLint index = ARG_GLint(info[0]);                                         \
     v8::Handle<v8::v8type> arr = v8::Handle<v8::v8type>::Cast(info[1]);       \
-    void * data = arr->BaseAddress();                                         \
+    void * data = arr->Buffer()->Externalize().Data();                        \
     ppb.interface->name(GetPPResource(info),                                  \
                         index,                                                \
                         reinterpret_cast<const glType *>(data));              \
@@ -229,7 +229,7 @@ namespace {
                                                                               \
     GLint location = ARG_GLint(info[0]);                                      \
     v8::Handle<v8::v8type> arr = v8::Handle<v8::v8type>::Cast(info[1]);       \
-    void * data = arr->BaseAddress();                                         \
+    void * data = arr->Buffer()->Externalize().Data();                        \
     ppb.interface->name(GetPPResource(info),                                  \
                         location,                                             \
                         1,                                                    \
@@ -248,7 +248,7 @@ namespace {
     GLint location = ARG_GLint(info[0]);                                      \
     GLboolean transpose =  ARG_GLboolean(info[1]);                            \
     v8::Handle<v8::v8type> arr = v8::Handle<v8::v8type>::Cast(info[2]);       \
-    void * data = arr->BaseAddress();                                         \
+    void * data = arr->Buffer()->Externalize().Data();                        \
     ppb.interface->name(GetPPResource(info),                                  \
                         location,                                             \
                         1,                                                    \
@@ -308,10 +308,11 @@ void BufferData(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info[1]->IsArrayBufferView()) {
     v8::Handle<v8::ArrayBufferView> view =
         v8::Handle<v8::ArrayBufferView>::Cast(info[1]);
+    void * data = view->Buffer()->Externalize().Data();
     ppb.opengl_es2->BufferData(GetPPResource(info),
                                target,
                                view->ByteLength(),
-                               view->BaseAddress(),
+                               data,
                                usage);
   }
   /*
@@ -430,7 +431,7 @@ void GetProgramParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
 
   GLenum name = ARG_GLenum(info[1]);
-  GLint value;
+  GLint value = 0;
   ppb.opengl_es2->GetProgramiv(GetPPResource(info),
                               ARG_GLuint(info[0]),
                               name,
@@ -462,7 +463,7 @@ void GetShaderParameter(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   GLint shader = ARG_GLuint(info[0]);
   GLenum name = ARG_GLenum(info[1]);
-  GLint value;
+  GLint value = 0;
   ppb.opengl_es2->GetShaderiv(GetPPResource(info),
                               shader,
                               name,

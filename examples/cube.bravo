@@ -1571,6 +1571,7 @@ function initShaders(gl, log) {
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
 
+
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     log("Unable to initialize the shader program.");
   }

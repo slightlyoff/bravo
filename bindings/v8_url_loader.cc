@@ -125,10 +125,11 @@ void ReadResponseBody(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info[0]->IsArrayBufferView()) {
     v8::Handle<v8::ArrayBufferView> view =
         v8::Handle<v8::ArrayBufferView>::Cast(info[0]);
+    void * data = view->Buffer()->Externalize().Data();
     info.GetReturnValue().Set(v8::Integer::New(
         ppb.url_loader->ReadResponseBody(
             GetPPResource(info),
-            view->BaseAddress(),
+            data,
             view->ByteLength(),
             V8CompletionCallback::Create(info.GetIsolate(), callback))));
     return;
