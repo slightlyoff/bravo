@@ -1,12 +1,16 @@
 # Bravo
 
-Nothing to see here. Move along.
+Bravo is an experiment in explaining the Open Web Platform. It does this by defining the lowest-level set of interoperable APIs needed to describe the behavior of everything else.
+
+Since Web Platform APIs are largely expressed in terms of JavaScript, and since JavaScript is the only interoperable turing-complete language which is part of the Web Platform, Bravo attempts to define a minimal set of JavaScript APIs necessary for bootstrapping the rest of the system.
+
+These APIs, the process model, and other primitives developed along the way are being designed with an eye towards multiple independent implementations and eventual standardization. This isn't about exposing one browser's internals, but rather about identifying the smallest vocabulary of features which _all_ browsers must implement in order to host web content today.
 
 ## Still Here?
 
-Fine. Suppose you want to know how to build, run, and contribute eh?
+Suppose you want to know how to build, run, and contribute to the experimental codebase, eh? This initial experiment is bootstrapped on top of Chromium, so you'll need a compiler, a beefy box, an some free time.
 
-7 Easy steps (that might take a long time to do):
+7 Easy steps (that may take a long time):
 
  1. Grab a [chromium checkout](http://dev.chromium.org/developers/how-tos/get-the-code). Some find that the [git submodule flow is faster](https://code.google.com/p/chromium/wiki/UsingGitSubmodules), but any method should work.
  1. `cd src && git clone https://github.com/slightlyoff/bravo`
@@ -31,7 +35,7 @@ Bravo, conceptually, is the lowest level of the web platform. To a web developer
 
 From an implementation perspective, bravo defines the interfaces to JavaScript for system-provided services. We are defining these APIs as we go and bootstrapping on top of the [Pepper C API](https://developers.google.com/native-client/pepperc/) in the Chromium prototype.
 
-Eventually all Bravo APIs (which need not resemble Pepper APIs) will be candidates for standardization. The runtime language -- JavaScript -- is already a web standard.
+Eventually all Bravo APIs (which should not resemble Pepper APIs) will be candidates for standardization. The runtime language -- JavaScript -- is already a web standard.
 
 Libraries built on top of Bravo may implement other standards (such as HTML, DOM, etc.) or provide alternative forms which reduce legacy baggage.
 
