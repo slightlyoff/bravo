@@ -15,7 +15,9 @@ Fine. Suppose you want to know how to build, run, and contribute eh?
  1. `git runhooks` or `build/chromium_gyp` to include Bravo in the build
  1. Build the Content Shell , e.g. `ninja -C out/Release content_shell`
  1. Drive your freshly minted build to any bravo content you happen to have/find, e.g. on OS X:
- `out/Release/Content\ Shell.app/Contents/MacOS/Content\ Shell --enable-logging --v=1 http://example.com/test.bravo`
+ <pre>out/Release/Content\ Shell.app/Contents/MacOS/Content\ Shell  \
+   --enable-logging --v=1 \
+   http://example.com/test.bravo</pre>
 
 ## Contributing
 
@@ -47,20 +49,25 @@ Bravo, as a result of it's current patch-in mechanism for building with Chrome, 
 
 To do this, first build Chrome (or use [Canary](https://www.google.com/intl/en/chrome/browser/canary.html)). Make sure you have also built the `content_shell` target (which will build and copy the right Bravo files to the right places). Next, start Chrome from the command line and pass in the ``--register-pepper-plugins="..."` flag. Here's how it might look on OS X:
 
-`out/Release/Chromium.app/Contents/MacOS/Chromium --register-pepper-plugins="out/Release/ppGoogleBravoPluginChrome.plugin/Contents/MacOS/ppGoogleBravoPluginChrome;application/bravo"`
+<pre>out/Release/Chromium.app/Contents/MacOS/Chromium \
+  --register-pepper-plugins="out/Release/ppGoogleBravoPluginChrome.plugin/Contents/MacOS/ppGoogleBravoPluginChrome;application/bravo"</pre>
 
 And on Linux (much terser):
 
-`out/Release/chromium --register-pepper-plugins="out/Release/plugins/libppGoogleBravoPluginChrome.so;application/bravo"`
+<pre>out/Release/chromium \
+  --register-pepper-plugins="out/Release/plugins/libppGoogleBravoPluginChrome.so;application/bravo"</pre>
 
 ## Debugging Bravo
 
 The simplest way to debug Bravo is to launch it via Chromium and attach GDB to to the plugin process. E.g., on OS X:
 
-`out/Debug/Chromium.app/Contents/MacOS/Chromium --ppapi-startup-dialog --no-sandbox --register-pepper-plugins="out/Debug/ppGoogleBravoPluginChrome.plugin/Contents/MacOS/ppGoogleBravoPluginChrome;application/bravo"`
+<pre>out/Debug/Chromium.app/Contents/MacOS/Chromium \
+  --ppapi-startup-dialog \
+  --no-sandbox \
+  --register-pepper-plugins="out/Debug/ppGoogleBravoPluginChrome.plugin/Contents/MacOS/ppGoogleBravoPluginChrome;application/bravo"</pre>
 
 The `--ppapi-startup-dialog` ensures that starting the plugin will send a message to stdout when navigating to Bravo content like:
 
-`[29489:1799:1004/151553:ERROR:child_process.cc(130)] Ppapi (29489) paused waiting for debugger to attach. Send SIGUSR1 to unpause.`
+`[...:ERROR:child_process.cc(130)] Ppapi (29489) paused waiting for debugger to attach. Send SIGUSR1 to unpause.`
 
 From there, simply attach GDB to the PID listed in the message (in this case 29489) to continue. Huzzah.
