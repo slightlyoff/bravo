@@ -1,0 +1,114 @@
+diff --git a/content/content_shell.gypi b/content/content_shell.gypi
+index efd102f..8db2f28 100644
+--- a/content/content_shell.gypi
++++ b/content/content_shell.gypi
+@@ -39,6 +39,8 @@
+         'content_worker',
+         'test_support_content',
+         'content_resources.gyp:content_resources',
++        '../bravo/bravo.gyp:bravo_plugin',
++        '../bravo/bravo.gyp:copy_bravo_plugin',
+         '../base/base.gyp:base',
+         '../base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
+         '../ipc/ipc.gyp:ipc',
+diff --git a/content/shell/common/shell_content_client.cc b/content/shell/common/shell_content_client.cc
+index 495ad85..457f508 100644
+--- a/content/shell/common/shell_content_client.cc
++++ b/content/shell/common/shell_content_client.cc
+@@ -5,9 +5,13 @@
+ #include "content/shell/common/shell_content_client.h"
+ 
+ #include "base/command_line.h"
++#include "base/path_service.h"
+ #include "base/strings/string_piece.h"
+ #include "base/strings/utf_string_conversions.h"
++#include "bravo/plugin/module.h"
++#include "ppapi/shared_impl/ppapi_permissions.h"
+ #include "content/public/common/content_switches.h"
++#include "content/public/common/pepper_plugin_info.h"
+ #include "content/shell/common/shell_switches.h"
+ #include "grit/shell_resources.h"
+ #include "grit/webkit_resources.h"
+@@ -17,10 +21,69 @@
+ #include "webkit/common/user_agent/user_agent_util.h"
+ 
+ namespace content {
++  
++namespace {
++
++const base::FilePath::CharType kInternalBravoPluginFileName[] =
++#if defined(OS_WIN)
++    FILE_PATH_LITERAL("ppGoogleBravoPluginChrome.dll");
++#elif defined(OS_MACOSX)
++    FILE_PATH_LITERAL("ppGoogleBravoPluginChrome.plugin");
++#else  // Linux and Chrome OS
++    FILE_PATH_LITERAL("libppGoogleBravoPluginChrome.so");
++#endif
++
++const char kBravoMimeDescription[] = "Bravo Framework";
++const char kBravoMimeExtension[] = "bravo";
++const char kBravoMimeType[] = "application/bravo";
++const char kBravoPluginName[] = "Bravo";
++
++bool GetBravoPath(base::FilePath* result) {
++  if(!PathService::Get(base::DIR_MODULE, result)) {
++    return false;
++  }
++#if defined(OS_MACOSX) && !defined(OS_IOS)
++  // Content Shell on OS X is nested much more deeply.
++  *result = result->DirName();
++  *result = result->DirName();
++  *result = result->DirName();
++  *result = result->DirName();
++#endif
++  *result = result->Append("plugins");
++  // LOG(INFO) << "Bravo DIR: " << result->value();
++  *result = result->Append(kInternalBravoPluginFileName);
++  // LOG(INFO) << "Bravo location: " << result->value();
++  return true;
++}
++
++PepperPluginInfo BravoPluginInfo() {
++  PepperPluginInfo bravo;
++  bravo.name = kBravoPluginName;
++  bravo.is_out_of_process = true;
++  bravo.is_sandboxed = true;
++  bravo.mime_types.push_back(WebPluginMimeType(
++      kBravoMimeType,
++      kBravoMimeExtension,
++      kBravoMimeDescription));
++  bravo.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
++
++  base::FilePath path;
++  GetBravoPath(&path);
++  bravo.path = path;
++  return bravo;
++}
++
++}
++
+ 
+ ShellContentClient::~ShellContentClient() {
+ }
+ 
++void ShellContentClient::AddPepperPlugins(
++  std::vector<content::PepperPluginInfo>* plugins) {
++  plugins->push_back(BravoPluginInfo());
++}
++
+ std::string ShellContentClient::GetUserAgent() const {
+   std::string product = "Chrome/" CONTENT_SHELL_VERSION;
+   CommandLine* command_line = CommandLine::ForCurrentProcess();
+diff --git a/content/shell/common/shell_content_client.h b/content/shell/common/shell_content_client.h
+index 84a1483..c875466 100644
+--- a/content/shell/common/shell_content_client.h
++++ b/content/shell/common/shell_content_client.h
+@@ -16,6 +16,8 @@ namespace content {
+ class ShellContentClient : public ContentClient {
+  public:
+   virtual ~ShellContentClient();
++  virtual void AddPepperPlugins(
++      std::vector<content::PepperPluginInfo>* plugins) OVERRIDE;
+ 
+   virtual std::string GetUserAgent() const OVERRIDE;
+   virtual string16 GetLocalizedString(int message_id) const OVERRIDE;
