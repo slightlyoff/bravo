@@ -1,16 +1,16 @@
 diff --git a/content/content_shell.gypi b/content/content_shell.gypi
-index efd102f..53b113e 100644
+index d24c3ff..f8820d0 100644
 --- a/content/content_shell.gypi
 +++ b/content/content_shell.gypi
-@@ -41,6 +41,8 @@
+@@ -40,6 +40,8 @@
          'content_resources.gyp:content_resources',
          '../base/base.gyp:base',
          '../base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
 +        '../bravo/bravo.gyp:bravo_plugin',
 +        '../bravo/bravo.gyp:copy_bravo_plugin',
+         '../components/components.gyp:breakpad_component',
          '../ipc/ipc.gyp:ipc',
          '../media/media.gyp:media',
-         '../net/net.gyp:net',
 diff --git a/content/shell/common/shell_content_client.cc b/content/shell/common/shell_content_client.cc
 index 495ad85..84d9399 100644
 --- a/content/shell/common/shell_content_client.cc
