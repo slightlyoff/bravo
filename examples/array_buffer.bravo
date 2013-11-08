@@ -1,3 +1,9 @@
 var main = function(p) {
+  p.log("allocating a small Array Buffer...");
   var ab = new ArrayBuffer(128);
+  p.log("success!");
+
+  p.log("allocating a 1M Array Buffer...");
+  var ab = new ArrayBuffer(1024*1024);
+  p.log("success!");
 };
